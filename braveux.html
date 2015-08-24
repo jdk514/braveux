@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Brave UX APP</title>
+	<style>
+
+		.container {
+			position: relative;
+			width: 100%;
+			height: 100%
+		}
+
+		.header {
+			position: relative;
+			z-index: 10;
+			background-color: #662C91;
+			color: white;
+		}
+
+		.titlebar {
+			width: 70%;
+			padding: 15px 0px 15px 10px;
+			display: inline-block;
+			background-color: #92278F;
+		}
+
+		.menubar {
+			padding: 15px 0px 15px 10px;
+			display: inline-block;
+			background-color: #662C91;
+		}
+
+		.content {
+			display: block;
+			background-color: #EBEEF0;
+		}
+
+		.block1 {
+			position: relative;
+			z-index: 5;
+			padding: 15px 0px 15px 20px;
+		}
+
+		.error {
+			position: absolute;
+			width: 100%;
+			left: 0px;
+			top: 0px;
+			z-index: 6	;
+			padding: 15px 0px;
+			background-color: #EC1C23;
+			box-shadow: 0px 0px 2px;
+		}
+
+		.error_msg {
+			color: white;
+		}
+
+		.info {
+			display: block;
+			font-size: 12px;
+			padding-bottom: 20px;
+			color: #616B76;
+		}
+
+		.loginform {
+			width: 80%;
+		}
+
+		.input {
+			padding: 5px 0px;
+		}
+
+		.help {
+			float: right;
+			color: #616B76;
+			font-size: 12px;
+			padding-top: 15px;
+		}
+
+		.help:hover {
+			cursor: pointer;
+		}
+
+		.login_text {
+			color: #616B76;;
+		}
+
+		.username_field {
+			background-color: white;
+			border-radius: 2px;
+			border: 1px solid inset #DFE4E8;
+			margin: 20px 0px 10px 0px;
+			padding: 0px;
+		}
+
+		.username {
+			width: 98%;
+			border: none;
+			color: #78909C;
+		}
+
+		.username:focus {
+			outline-width: 0;
+		}
+
+		.password_field {
+			position: relative;
+			background-color: white;
+			border-radius: 2px;
+			border:1px solid inset #DFE4E8;
+			padding: 0px;
+			margin: 0px;
+
+		}
+
+		.password {
+			display: inline-block;
+			width: 80%;
+			border: none;
+			border-radius: 2px;
+			color: #78909C;
+		}
+
+		.password:focus {
+			outline-width: 0;
+		}
+
+		.password_btn {
+			border: none;
+			display: inline-block;
+			background-color: white;
+			border-radius: 2px;
+			box-shadow: none;
+			padding: 0px;
+			margin: none;
+			float:right;
+		}
+
+		.password_btn:focus {
+			outline-width: 0;
+		}
+
+		.password_btn img {
+			padding: 3px 2px 0px 0px;
+			margin: 0px;
+			width: 13px;
+		}
+
+		.login {
+			margin-top: 10px;
+			padding: 5px 15px;
+			border-radius: 2px;
+			background-color: #662C91;
+			color: white;
+			border: none;
+		}
+
+		.footer {
+			position: absolute;
+			bottom: 0px;
+			min-height: 30px;
+			padding: 10px 10px;
+			color: #78909C;
+			background-color: #DFE4E8;
+		}
+
+		body {
+			height: 100%;
+			margin: 0px;
+			padding: 0px;
+			background-color: #DFE4E8;
+			font-family: "Roboto Condensed";
+		}
+
+		h2 {
+			margin: 0px;
+			font-size: 12px;
+		}
+
+		html {
+			height: 100%;
+		}
+
+	</style>
+	<script>
+		//Provide gudielines for the login/registration fields - uses set message
+		function help() {
+			alert("Username cannot be empty and the password must be longer than 6 characters with one capital and one non-alphanumeric character")
+		}
+
+		//If an error has occured, move the error block down from behind the header
+		// - msg = the message corresponding to given error
+		function error_msg(msg) {
+			var err = document.getElementById("error")
+			var err_msg = document.getElementById("error_msg")
+			err_msg.innerHTML = msg
+			var top = 0
+			function move() {
+				top++
+				if (top>48) {
+					clearInterval(id)
+				}
+				err.style["top"] = top+"px"
+			}
+			var id = setInterval(move, 10)
+			document.getElementsByClassName("username_field")[0].style.border = "1px solid #EC1C23"
+			document.getElementsByClassName("password_field")[0].style.border = "1px solid #EC1C23"
+		}
+
+		//When clicking the password icon change from password to text or vica versa
+		function password_view() {
+			var pass = document.getElementById("password")
+			if (pass.type == "password") {
+				pass.type = "text"
+			} else {
+				pass.type = "password"
+			}
+		}
+
+		//If an input field is left empty restor the previous contents i.e. username textfield restores to "Username"
+		// - field = input to be populated
+		function populate_field(field) {
+			var input = document.getElementById(field)
+			if (input.value == '') {
+				input.value = field.charAt(0).toUpperCase() + field.slice(1)
+			}
+		}
+
+		//Upon clicking into a field empty the value to allow user input
+		// - field = input to be cleared for user input
+		function clear_field(field) {
+			var input = document.getElementById(field)
+			input.value = ''
+			input.focus()
+		}
+
+		//If form validates, remove any error message
+		function remove_error() {
+			var err = document.getElementById("error")
+			err.innerHTML = ''
+			err.style.top = "0px"
+		}
+
+		//Validate user input
+		// - form = form contianing the input
+		function validate(form) {
+			var username = form.username.value
+			var password = form.password.value
+			if (username == '') {
+				error_msg("Username is empty")
+			} else if (password.length < 6) {
+				error_msg("Password must be longer than 5 characters")
+			} else if (password.toLowerCase() == password) {
+					error_msg("Password must have a capital letter")
+			} else if (/^[a-z0-9]+$/i.test(password)) {
+					error_msg("Password must conatin at least one non alpha-numeric character")
+			} else {
+				remove_error()
+			}
+
+		}
+
+		//Unsure what behaviour was expected for fonts, so loaded via web resource after content has been loaded
+		document.addEventListener("DOMContentLoaded", function() {
+			update_font();
+
+			function update_font() {
+				var css = '@import url(https://fonts.googleapis.com/css?family=Roboto:100,100italic,300,300italic,400,400italic,500,500italic,700,700italic,900,900italic&subset=latin,latin-ext,cyrillic,cyrillic-ext,greek-ext,greek,vietnamese);\
+						   @import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext,cyrillic-ext,cyrillic,greek-ext,greek,vietnamese);\
+						   @import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&subset=latin,latin-ext,greek-ext,greek,vietnamese,cyrillic,cyrillic-ext);',
+					head = document.head || document.getElementsByTagName('head')[0],
+					style = document.createElement('style');
+
+				style.type = 'text/css';
+				if (style.styleSheet){
+					style.styleSheet.cssText = css;
+				} else {
+					style.appendChild(document.createTextNode(css));
+				}
+				head.appendChild(style);
+			}
+		});
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<div class="titlebar">
+				<span class="title">The Brave UX APP</span>
+			</div>
+			<div class="menubar">
+				<span class="title">Menu</span>
+			</div>
+		</div>
+		<div class="content">
+			<div class="block1">
+				<span class="icon" data-icon="flag"></span>
+				<span class="info">Do NOT bookmark this page.</span>
+				<div class="loginform">
+					<form onsubmit="return false;">
+						<span class="login_text">Login</span>
+						<div class="input username_field">
+							<input type="text" id="username" class="username" onBlur="populate_field('username')" onFocus="clear_field('username')" name="username" value="Username" />
+						</div>
+						<div class="input password_field">
+							<input type="password" id="password" onBlur="populate_field('password')" onFocus="clear_field('password')" class="password" name="password" value="Password" /><button type="submit" class="password_btn" onclick="password_view()" ><img src="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/svgs/fi-eye.svg" alt="" /></button>
+						</div>
+						<div class="input">
+							<input type="submit" onClick="validate(this.form)" class="login" name="login" value="Login" /><span class="help" onClick="help()">Need help?</span>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="error" class="error">
+				<span id="error_msg" class="error_msg"></span>
+			</div>
+		</div>
+		<div class="footer">
+			Powered by Brave UX
+		</div>
+</body>
+</html>
